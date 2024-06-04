@@ -1,55 +1,74 @@
 package homeWork;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FamilyTree implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private Map<Long, Person> persons;
+    private List<Person> persons;
 
     public FamilyTree() {
-        this.persons = new HashMap<>();
+        this.persons = new ArrayList<>();
     }
 
     public void addPerson(Person person) {
-        persons.put(person.getId(), person);
-        for (Long parentId : person.getParentIds()) {
-            Person parent = persons.get(parentId);
-            if (parent != null) {
-                parent.addChildId(person.getId());
-            }
-        }
-        for (Long childId : person.getChildIds()) {
-            Person child = persons.get(childId);
-            if (child != null) {
-                child.addParentId(person.getId());
-            }
-        }
+        persons.add(person);
     }
 
-    public void displayFamilyInfo(Long personId, List<Person> allPersons) {
+    public List<Person> getAllPersons() {
+        return new ArrayList<>(persons);
+    }
+
+    // Метод для отображения информации о родителях и детях по указанному идентификатору
+    public String displayFamilyInfo(Long personId) {
         Person person = findPersonById(personId);
-        if (person != null) {
-            System.out.println("Информация о персоне: " + person.getLastName() + " " + person.getFirstName() + " " + person.getMiddleName());
-            displayParentInfo(person, allPersons, 0);
-            displayChildrenInfo(person, allPersons, 0);
-        } else {
-            System.out.println("Персона с id " + personId + " не найдена.");
+
+        if (person == null) {
+            return "Персона с ID " + personId + " не найдена.";
         }
+
+        StringBuilder info = new StringBuilder();
+        info.append("Информация о персоне:\n");
+        info.append(displayPersonInfo(person));
+        info.append("\n");
+
+        info.append(displayRelativesInfo("Родители:", person.getParents()));
+        info.append(displayRelativesInfo("Дети:", person.getChildren()));
+
+        return info.toString();
     }
 
-    private void displayParentInfo(Person person, List<Person> allPersons, int level) {
-        for (Long parentId : person.getParentIds()) {
-            Person parent = findPersonById(parentId);
-            if (parent != null && allPersons.contains(parent)) {
-                printIndented("Родитель: " + parent.getLastName() + " " + parent.getFirstName() + " " + parent.getMiddleName(), level);
-                displayParentInfo(parent, allPersons, level + 1);
+    // Метод для поиска персоны по идентификатору
+    private Person findPersonById(Long personId) {
+        return persons.stream()
+                .filter(person -> person.getId().equals(personId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // Метод для отображения информации о персоне
+    private String displayPersonInfo(Person person) {
+        return "ID: " + person.getId() + "\n" +
+                "Фамилия: " + person.getLastName() + "\n" +
+                "Имя: " + person.getFirstName() + "\n" +
+                "Отчество: " + person.getMiddleName() + "\n" +
+                "Дата рождения: " + person.getBirthDate() + "\n" +
+                "Пол: " + person.getGender() + "\n";
+    }
+
+    // Метод для отображения информации о родственниках
+    private String displayRelativesInfo(String relationship, List<Person> relatives) {
+        StringBuilder info = new StringBuilder();
+        info.append(relationship).append("\n");
+
+        if (relatives.isEmpty()) {
+            info.append("Нет информации о родственниках.\n");
+        } else {
+            for (Person relative : relatives) {
+                info.append(displayPersonInfo(relative)).append("\n");
             }
         }
-    }
 
-    private void displayChildrenInfo(Person person, List<Person> allPersons, int level) {
-        for (Long childId : person.getChildIds()) {
-            Person child = findPersonById(childId);
+        return info.toString();
+    }
+}

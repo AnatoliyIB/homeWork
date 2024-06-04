@@ -8,40 +8,38 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Person implements Serializable {
     private static final long serialVersionUID = 1L;
-    private static AtomicLong idGenerator = new AtomicLong(1);
-    private long id;
 
+    private static final AtomicLong idGenerator = new AtomicLong(0);
+    private final Long id;
     private String lastName;
     private String firstName;
     private String middleName;
-
     private Gender gender;
     private Date birthDate;
     private Date deathDate;
+    private List<Person> parents;
+    private List<Person> children;
+    private Person spouse;
 
-    private List<Long> parentIds;
-    private List<Long> childIds;
-    private Long spouseId;
+    public Person(String lastName, String firstName, String middleName, Date birthDate) {
+        this(lastName, firstName, middleName, null, birthDate, null, null, null, null);
+    }
 
-    public Person(String lastName, String firstName, String middleName, Gender gender,
-                  Date birthDate, Date deathDate, List<Long> parentIds, List<Long> childIds, Long spouseId) {
-        this.id = idGenerator.getAndIncrement();
+    public Person(String lastName, String firstName, String middleName, Gender gender, Date birthDate, 
+                  Date deathDate, List<Person> parents, List<Person> children, Person spouse) {
+        this.id = idGenerator.incrementAndGet();
         this.lastName = lastName;
         this.firstName = firstName;
         this.middleName = middleName;
         this.gender = gender;
         this.birthDate = birthDate;
         this.deathDate = deathDate;
-        this.parentIds = parentIds != null ? new ArrayList<>(parentIds) : new ArrayList<>();
-        this.childIds = childIds != null ? new ArrayList<>(childIds) : new ArrayList<>();
-        this.spouseId = spouseId;
+        this.parents = parents != null ? new ArrayList<>(parents) : new ArrayList<>();
+        this.children = children != null ? new ArrayList<>(children) : new ArrayList<>();
+        this.spouse = spouse;
     }
 
-    public Person(String lastName, String firstName, String middleName, Date birthDate) {
-        this(lastName, firstName, middleName, null, birthDate, null, null, null, null);
-    }
-
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -49,66 +47,98 @@ public class Person implements Serializable {
         return lastName;
     }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public String getFirstName() {
         return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getMiddleName() {
         return middleName;
     }
 
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
     public Gender getGender() {
         return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public Date getBirthDate() {
         return birthDate;
     }
 
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public Date getDeathDate() {
         return deathDate;
     }
 
-    public List<Long> getParentIds() {
-        return parentIds;
+    public void setDeathDate(Date deathDate) {
+        this.deathDate = deathDate;
     }
 
-    public List<Long> getChildIds() {
-        return childIds;
+    public List<Person> getParents() {
+        return parents;
     }
 
-    public Long getSpouseId() {
-        return spouseId;
+    public void setParents(List<Person> parents) {
+        this.parents = parents;
     }
 
-    public boolean addParentId(Long parentId) {
-        if (parentIds.contains(parentId)) {
+    public List<Person> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Person> children) {
+        this.children = children;
+    }
+
+    public Person getSpouse() {
+        return spouse;
+    }
+
+    public void setSpouse(Person spouse) {
+        this.spouse = spouse;
+    }
+
+    public boolean addChild(Person child) {
+        if (children.contains(child)) {
             return false;
         } else {
-            parentIds.add(parentId);
+            children.add(child);
             return true;
         }
     }
 
-    public boolean addChildId(Long childId) {
-        if (childIds.contains(childId)) {
+    public boolean addParent(Person parent) {
+        if (parents.contains(parent)) {
             return false;
         } else {
-            childIds.add(childId);
+            parents.add(parent);
             return true;
         }
     }
 
-    public boolean addSpouseId(Long spouseId) {
-        if (this.spouseId != null && this.spouseId.equals(spouseId)) {
+    public boolean addSpouse(Person spouse) {
+        if (this.spouse != null) {
             return false;
         } else {
-            this.spouseId = spouseId;
+            this.spouse = spouse;
             return true;
         }
-    }
-
-    public boolean isAlive() {
-        return deathDate == null || deathDate.after(new Date());
     }
 }
