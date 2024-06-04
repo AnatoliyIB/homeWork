@@ -20,6 +20,9 @@ public class Main {
             familyTree.addPerson(person);
         }
 
+        // Создание экземпляра FamilyTreeFileManager
+        FileManager fileManager = new FamilyTreeFileManager();
+
         JFrame frame = new JFrame("Family Tree");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400);
@@ -57,7 +60,7 @@ public class Main {
                 if (fileName != null && !fileName.trim().isEmpty()) {
                     File file = new File(fileName);
                     try {
-                        FamilyTreeFileManager.saveFamilyTreeToFile(familyTree, file);
+                        fileManager.saveFamilyTreeToFile(familyTree, file);
                         JOptionPane.showMessageDialog(frame, "Family tree saved successfully.");
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(frame, "Error saving family tree: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -75,7 +78,7 @@ public class Main {
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     try {
-                        FamilyTree loadedFamilyTree = FamilyTreeFileManager.loadFamilyTreeFromFile(selectedFile);
+                        FamilyTree loadedFamilyTree = fileManager.loadFamilyTreeFromFile(selectedFile);
                         List<Person> loadedPersons = loadedFamilyTree.getAllPersons();
                         allPersons.clear();
                         allPersons.addAll(loadedPersons);
