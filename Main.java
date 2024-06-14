@@ -1,5 +1,11 @@
 package homeWork;
 
+import homeWork.FamilyTree.FamilyTree;
+import homeWork.Person.Person;
+import homeWork.Person.Gender;
+import homeWork.Service.FileManager;
+import homeWork.Service.FamilyTreeFileManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,15 +21,15 @@ public class Main {
 
     public static void main(String[] args) {
         List<Person> allPersons = createPersonList();
-        FamilyTree familyTree = new FamilyTree();
+        FamilyTree<Person> familyTree = new FamilyTree<>();
         for (Person person : allPersons) {
             familyTree.addPerson(person);
         }
 
-        // Создание экземпляра FamilyTreeFileManager
-        FileManager fileManager = new FamilyTreeFileManager();
+        // Менеджер файлов
+        FamilyTreeFileManager fileManager = new FamilyTreeFileManager();
 
-        JFrame frame = new JFrame("Family Tree");
+        JFrame frame = new JFrame("Генеалогическое дерево");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400);
 
@@ -39,7 +45,7 @@ public class Main {
         displayArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(displayArea);
 
-        JButton showInfoButton = new JButton("Show Info");
+        JButton showInfoButton = new JButton("Показать информацию");
         showInfoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -52,24 +58,24 @@ public class Main {
             }
         });
 
-        JButton saveButton = new JButton("Save to File");
+        JButton saveButton = new JButton("Сохранить в файл");
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String fileName = JOptionPane.showInputDialog(frame, "Enter file name (with extension):");
+                String fileName = JOptionPane.showInputDialog(frame, "Введите имя файла (с расширением):");
                 if (fileName != null && !fileName.trim().isEmpty()) {
                     File file = new File(fileName);
                     try {
                         fileManager.saveFamilyTreeToFile(familyTree, file);
-                        JOptionPane.showMessageDialog(frame, "Family tree saved successfully.");
+                        JOptionPane.showMessageDialog(frame, "Генеалогическое дерево успешно сохранено.");
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(frame, "Error saving family tree: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Ошибка сохранения генеалогического дерева: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         });
 
-        JButton loadButton = new JButton("Load from File");
+        JButton loadButton = new JButton("Загрузить из файла");
         loadButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -78,7 +84,7 @@ public class Main {
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     try {
-                        FamilyTree loadedFamilyTree = fileManager.loadFamilyTreeFromFile(selectedFile);
+                        FamilyTree<Person> loadedFamilyTree = fileManager.loadFamilyTreeFromFile(selectedFile);
                         List<Person> loadedPersons = loadedFamilyTree.getAllPersons();
                         allPersons.clear();
                         allPersons.addAll(loadedPersons);
@@ -86,11 +92,29 @@ public class Main {
                         for (Person person : allPersons) {
                             personComboBox.addItem(person.getId() + ": " + person.getFirstName() + " " + person.getLastName());
                         }
-                        JOptionPane.showMessageDialog(frame, "Family tree loaded successfully.");
+                        JOptionPane.showMessageDialog(frame, "Генеалогическое дерево успешно загружено.");
                     } catch (IOException | ClassNotFoundException ex) {
-                        JOptionPane.showMessageDialog(frame, "Error loading family tree: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Ошибка загрузки генеалогического дерева: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
                 }
+            }
+        });
+
+        JButton sortByNameButton = new JButton("Сортировать по имени");
+        sortByNameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                familyTree.sortByName();
+                updateComboBox(personComboBox, familyTree);
+            }
+        });
+
+        JButton sortByBirthDateButton = new JButton("Сортировать по дате рождения");
+        sortByBirthDateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                familyTree.sortByBirthDate();
+                updateComboBox(personComboBox, familyTree);
             }
         });
 
@@ -99,6 +123,8 @@ public class Main {
         buttonPanel.add(showInfoButton);
         buttonPanel.add(saveButton);
         buttonPanel.add(loadButton);
+        buttonPanel.add(sortByNameButton);
+        buttonPanel.add(sortByBirthDateButton);
 
         panel.add(personComboBox, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -108,15 +134,22 @@ public class Main {
         frame.setVisible(true);
     }
 
+    private static void updateComboBox(JComboBox<String> comboBox, FamilyTree<Person> familyTree) {
+        comboBox.removeAllItems();
+        for (Person person : familyTree) {
+            comboBox.addItem(person.getId() + ": " + person.getFirstName() + " " + person.getLastName());
+        }
+    }
+
     private static List<Person> createPersonList() {
         List<Person> persons = new ArrayList<>();
 
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Person person1 = new Person("Иванов", "Иван", "Иванович", sdf.parse("1980-01-01"));
-            Person person2 = new Person("Иванова", "Мария", "Петровна", sdf.parse("1982-04-15"));
-            Person person3 = new Person("Петров", "Петр", "Сергеевич", sdf.parse("1955-06-20"));
-            Person person4 = new Person("Сидоров", "Андрей", "Иванович", sdf.parse("1945-10-10"));
+            Person person1 = new Person(1L, "Иванов", "Иван", "Иванович", sdf.parse("1980-01-01"), Gender.MALE);
+            Person person2 = new Person(2L, "Иванова", "Мария", "Петровна", sdf.parse("1982-04-15"), Gender.FEMALE);
+            Person person3 = new Person(3L, "Петров", "Петр", "Сергеевич", sdf.parse("1955-06-20"), Gender.MALE);
+            Person person4 = new Person(4L, "Сидоров", "Андрей", "Иванович", sdf.parse("1945-10-10"), Gender.MALE);
 
             person1.addChild(person3);
             person1.addChild(person4);
