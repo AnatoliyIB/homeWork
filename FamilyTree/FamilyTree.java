@@ -7,69 +7,65 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import homeWork.Person.Person;
-
-public class FamilyTree<T extends Person> implements FamilyTreeInterface<T>, Serializable {
-    private List<T> persons;
+public class FamilyTree<T extends FamilyMember<T>> implements FamilyTreeInterface<T>, Serializable {
+    private List<T> members;
 
     public FamilyTree() {
-        this.persons = new ArrayList<>();
+        this.members = new ArrayList<>();
     }
 
     @Override
-    public void addPerson(T person) {
-        persons.add(person);
+    public void addPerson(T member) {
+        members.add(member);
     }
 
     @Override
     public List<T> getAllPersons() {
-        return new ArrayList<>(persons);
+        return new ArrayList<>(members);
     }
 
     @Override
-    public String displayFamilyInfo(Long personId) {
-        T person = findPersonById(personId);
+    public String displayFamilyInfo(Long memberId) {
+        T member = findPersonById(memberId);
 
-        if (person == null) {
-            return "Person with ID " + personId + " not found.";
+        if (member == null) {
+            return "Member with ID " + memberId + " not found.";
         }
 
         StringBuilder info = new StringBuilder();
-        info.append("Person Information:\n");
-        info.append(displayPersonInfo(person));
+        info.append("Member Information:\n");
+        info.append(displayMemberInfo(member));
         info.append("\n");
 
-        info.append(displayRelativesInfo("Parents:", person.getParents()));
-        info.append(displayRelativesInfo("Children:", person.getChildren()));
+        info.append(displayRelativesInfo("Parents:", member.getParents()));
+        info.append(displayRelativesInfo("Children:", member.getChildren()));
 
         return info.toString();
     }
 
-    private T findPersonById(Long personId) {
-        return persons.stream()
-                .filter(person -> person.getId().equals(personId))
+    private T findPersonById(Long memberId) {
+        return members.stream()
+                .filter(member -> member.getId().equals(memberId))
                 .findFirst()
                 .orElse(null);
     }
 
-    private String displayPersonInfo(Person person) {
-        return "ID: " + person.getId() + "\n" +
-                "Last Name: " + person.getLastName() + "\n" +
-                "First Name: " + person.getFirstName() + "\n" +
-                "Middle Name: " + person.getMiddleName() + "\n" +
-                "Birth Date: " + person.getBirthDate() + "\n" +
-                "Gender: " + person.getGender() + "\n";
+    private String displayMemberInfo(FamilyMember<?> member) {
+        return "ID: " + member.getId() + "\n" +
+                "Last Name: " + member.getLastName() + "\n" +
+                "First Name: " + member.getFirstName() + "\n";
+                // Дополнительные поля, если нужно
     }
 
-    private String displayRelativesInfo(String relationship, List<? extends Person> relatives) {
+    private String displayRelativesInfo(String relationship, List<? extends FamilyMember<?>> relatives) {
         StringBuilder info = new StringBuilder();
         info.append(relationship).append("\n");
 
         if (relatives.isEmpty()) {
             info.append("No information about relatives.\n");
         } else {
-            for (Person relative : relatives) {
-                info.append(displayPersonInfo(relative)).append("\n");
+            for (FamilyMember<?> relative : relatives) {
+                info.append(displayMemberInfo(relative)).append("\n");
             }
         }
 
@@ -78,16 +74,17 @@ public class FamilyTree<T extends Person> implements FamilyTreeInterface<T>, Ser
 
     @Override
     public Iterator<T> iterator() {
-        return persons.iterator();
+        return members.iterator();
     }
 
     @Override
     public void sortByName() {
-        Collections.sort(persons, Comparator.comparing(Person::getFirstName).thenComparing(Person::getLastName));
+        Collections.sort(members, Comparator.comparing(FamilyMember::getFirstName).thenComparing(FamilyMember::getLastName));
     }
 
     @Override
     public void sortByBirthDate() {
-        Collections.sort(persons, Comparator.comparing(Person::getBirthDate));
+        // Если интерфейс FamilyMember будет содержать метод getBirthDate(), то раскомментируйте строку ниже
+        // Collections.sort(members, Comparator.comparing(FamilyMember::getBirthDate));
     }
 }

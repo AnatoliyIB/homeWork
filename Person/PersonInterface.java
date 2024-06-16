@@ -1,10 +1,10 @@
 package homeWork.Person;
 
+import homeWork.FamilyTree.FamilyMember;
 import java.util.Date;
 import java.util.List;
 
-public interface PersonInterface {
-    Long getId();
+public interface PersonInterface extends FamilyMember<Person> {
     String getLastName();
     void setLastName(String lastName);
     String getFirstName();
@@ -15,9 +15,9 @@ public interface PersonInterface {
     void setGender(Gender gender);
     Date getBirthDate();
     void setBirthDate(Date birthDate);
-    List<Person> getParents();
+    Date getDeathDate();
+    void setDeathDate(Date deathDate);
     void setParents(List<Person> parents);
-    List<Person> getChildren();
     void setChildren(List<Person> children);
     Person getSpouse();
     void setSpouse(Person spouse);

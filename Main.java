@@ -3,7 +3,6 @@ package homeWork;
 import homeWork.FamilyTree.FamilyTree;
 import homeWork.Person.Person;
 import homeWork.Person.Gender;
-import homeWork.Service.FileManager;
 import homeWork.Service.FamilyTreeFileManager;
 
 import javax.swing.*;
@@ -23,7 +22,7 @@ public class Main {
         List<Person> allPersons = createPersonList();
         FamilyTree<Person> familyTree = new FamilyTree<>();
         for (Person person : allPersons) {
-            familyTree.addPerson(person);
+            familyTree.addMember(person);
         }
 
         // Менеджер файлов
@@ -85,7 +84,7 @@ public class Main {
                     File selectedFile = fileChooser.getSelectedFile();
                     try {
                         FamilyTree<Person> loadedFamilyTree = fileManager.loadFamilyTreeFromFile(selectedFile);
-                        List<Person> loadedPersons = loadedFamilyTree.getAllPersons();
+                        List<Person> loadedPersons = loadedFamilyTree.getAllMembers();
                         allPersons.clear();
                         allPersons.addAll(loadedPersons);
                         personComboBox.removeAllItems();
@@ -136,7 +135,7 @@ public class Main {
 
     private static void updateComboBox(JComboBox<String> comboBox, FamilyTree<Person> familyTree) {
         comboBox.removeAllItems();
-        for (Person person : familyTree) {
+        for (Person person : familyTree.getAllMembers()) {
             comboBox.addItem(person.getId() + ": " + person.getFirstName() + " " + person.getLastName());
         }
     }
