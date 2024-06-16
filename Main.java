@@ -25,7 +25,7 @@ public class Main {
             familyTree.addMember(person);
         }
 
-        // Менеджер файлов
+       
         FamilyTreeFileManager fileManager = new FamilyTreeFileManager();
 
         JFrame frame = new JFrame("Генеалогическое дерево");

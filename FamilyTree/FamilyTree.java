@@ -54,7 +54,7 @@ public class FamilyTree<T extends FamilyMember<T>> implements FamilyTreeInterfac
         return "ID: " + member.getId() + "\n" +
                 "Last Name: " + member.getLastName() + "\n" +
                 "First Name: " + member.getFirstName() + "\n";
-                // Дополнительные поля, если нужно
+               
     }
 
     private String displayRelativesInfo(String relationship, List<? extends FamilyMember<?>> relatives) {
@@ -84,7 +84,7 @@ public class FamilyTree<T extends FamilyMember<T>> implements FamilyTreeInterfac
 
     @Override
     public void sortByBirthDate() {
-        // Если интерфейс FamilyMember будет содержать метод getBirthDate(), то раскомментируйте строку ниже
-        // Collections.sort(members, Comparator.comparing(FamilyMember::getBirthDate));
+        
+        Collections.sort(members, Comparator.comparing(FamilyMember::getBirthDate));
     }
 }
