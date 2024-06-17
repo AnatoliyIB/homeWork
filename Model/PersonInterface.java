@@ -1,6 +1,5 @@
-package homeWork.Person;
+package homeWork.Model;
 
-import homeWork.FamilyTree.FamilyMember;
 import java.util.Date;
 import java.util.List;
 

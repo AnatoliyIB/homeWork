@@ -1,4 +1,4 @@
-package homeWork.Person;
+package homeWork.Model;
 
 import java.io.Serializable;
 

@@ -1,15 +1,14 @@
 package homeWork.Service;
 
-import homeWork.FamilyTree.FamilyTree;
-import homeWork.Person.Person;
+import homeWork.Model.FamilyTree;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public interface FileManager {
-    void saveFamilyTreeToFile(FamilyTree familyTree, File file) throws IOException;
-    FamilyTree loadFamilyTreeFromFile(File file) throws IOException, ClassNotFoundException;
-    void savePersonsToFile(List<Person> persons, File file) throws IOException;
-    List<Person> loadPersonsFromFile(File file) throws IOException, ClassNotFoundException;
+    <T> void saveFamilyTreeToFile(FamilyTree<T> familyTree, File file) throws IOException;
+    <T> FamilyTree<T> loadFamilyTreeFromFile(File file) throws IOException, ClassNotFoundException;
+    <T> void savePersonsToFile(List<T> persons, File file) throws IOException;
+    <T> List<T> loadPersonsFromFile(File file) throws IOException, ClassNotFoundException;
 }
