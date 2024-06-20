@@ -1,26 +1,52 @@
 package homeWork.Model;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-public class FamilyTree<T> implements Serializable {
-    private List<T> members;
+// Класс генеалогического дерева
+public class FamilyTree<T extends Comparable<T>> implements FamilyTreeInterface<T>, Iterable<T> {
+    private List<T> familyMembers;
 
-    public FamilyTree(List<T> members) {
-        this.members = members;
+    // Конструктор класса
+    public FamilyTree() {
+        familyMembers = new ArrayList<>();
     }
 
-    public List<T> getMembers() {
-        return members;
+    // Метод добавления члена семьи
+    @Override
+    public void addPerson(T person) {
+        familyMembers.add(person);
     }
 
-    public void setMembers(List<T> members) {
-        this.members = members;
+    // Метод отображения информации о семье
+    @Override
+    public String displayFamilyInfo(Long personId) {
+        // Логика отображения информации о семье (необходимо реализовать конкретную логику для вашего проекта)
+        return "Информация о члене семьи с ID " + personId;
     }
 
-    public void addMember(T member) {
-        this.members.add(member);
+    // Метод сортировки по имени
+    @Override
+    public void sortByName() {
+        Collections.sort(familyMembers);
     }
 
-    // Другие методы для работы с семейным деревом
+    // Метод сортировки по дате рождения
+    @Override
+    public void sortByBirthDate() {
+        // Для обобщённого типа сортировка по дате рождения должна быть переопределена в конкретных типах
+    }
+
+    // Метод для итерации по элементам
+    @Override
+    public Iterator<T> iterator() {
+        return familyMembers.iterator();
+    }
+
+    // Метод для получения всех членов семьи
+    public List<T> getAllPersons() {
+        return familyMembers;
+    }
 }
