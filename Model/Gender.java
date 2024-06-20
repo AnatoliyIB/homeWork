@@ -1,6 +1,8 @@
 package homeWork.Model;
 
-// Перечисление для пола
+/**
+ * Перечисление для представления пола человека.
+ */
 public enum Gender {
     MALE, FEMALE
 }
