@@ -1,116 +1,137 @@
 package homeWork.View;
 
-import homeWork.Model.FamilyTree;
 import homeWork.Model.Person;
 import homeWork.Presenter.MainPresenter;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Scanner;
 
-public class MainView<T extends Person> {
-    private MainPresenter<T> presenter;
-    private JFrame frame;
+public class MainView {
+    private MainPresenter presenter;
+    private Scanner scanner;
 
     public MainView() {
-        presenter = new MainPresenter<>();
-        initialize();
+        presenter = new MainPresenter();
+        scanner = new Scanner(System.in);
     }
 
-    private void initialize() {
-        frame = new JFrame();
-        frame.setBounds(100, 100, 450, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().setLayout(new FlowLayout());
-
-        JButton addButton = new JButton("Добавить Персону");
-        frame.getContentPane().add(addButton);
-
-        addButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                presenter.addPerson((T) new Person(1, "Иван Иванов", LocalDate.of(1985, 5, 20)));
-                presenter.addPerson((T) new Person(2, "Мария Иванова", LocalDate.of(2010, 6, 15)));
-                presenter.addChild(1, 2);
-                JOptionPane.showMessageDialog(frame, "Персона добавлена!");
-            }
-        });
-
-        JButton showButton = new JButton("Показать Дерево");
-        frame.getContentPane().add(showButton);
-
-        showButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                StringBuilder familyTreeInfo = new StringBuilder();
-                for (T person : presenter.getFamilyTreeMembers()) {
-                    familyTreeInfo.append(person.getName()).append(" (").append(person.getBirthDate()).append(")\n");
-                    for (Person child : person.getChildren()) {
-                        familyTreeInfo.append("  -> ").append(child.getName()).append(" (").append(child.getBirthDate()).append(")\n");
-                    }
-                }
-                JOptionPane.showMessageDialog(frame, familyTreeInfo.toString());
-            }
-        });
-
-        JButton loadButton = new JButton("Загрузить");
-        frame.getContentPane().add(loadButton);
-
-        loadButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Реализация загрузки дерева
-                JOptionPane.showMessageDialog(frame, "Дерево загружено!");
-            }
-        });
-
-        JButton saveButton = new JButton("Сохранить");
-        frame.getContentPane().add(saveButton);
-
-        saveButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Реализация сохранения дерева
-                JOptionPane.showMessageDialog(frame, "Дерево сохранено!");
-            }
-        });
-
-        JButton sortByNameButton = new JButton("Сортировать по Имени");
-        frame.getContentPane().add(sortByNameButton);
-
-        sortByNameButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Реализация сортировки по имени
-                JOptionPane.showMessageDialog(frame, "Дерево отсортировано по имени!");
-            }
-        });
-
-        JButton sortByDateButton = new JButton("Сортировать по Дате Рождения");
-        frame.getContentPane().add(sortByDateButton);
-
-        sortByDateButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Реализация сортировки по дате рождения
-                JOptionPane.showMessageDialog(frame, "Дерево отсортировано по дате рождения!");
-            }
-        });
-
-        frame.setVisible(true);
+    public void run() {
+        boolean running = true;
+        while (running) {
+            displayMenu();
+            int choice = getUserChoice();
+            handleUserChoice(choice);
+        }
     }
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    MainView<Person> window = new MainView<>();
-                    window.frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+    private void displayMenu() {
+        System.out.println("Меню:");
+        System.out.println("1. Добавить Персону");
+        System.out.println("2. Показать Дерево");
+        System.out.println("3. Загрузить");
+        System.out.println("4. Сохранить");
+        System.out.println("5. Сортировать по Имени");
+        System.out.println("6. Сортировать по Дате Рождения");
+        System.out.println("7. Выход");
+        System.out.print("Выберите опцию: ");
     }
 
-    public void showFamilyTreeInfo(FamilyTree<Person> familyTree) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'showFamilyTreeInfo'");
+    private int getUserChoice() {
+        int choice = scanner.nextInt();
+        scanner.nextLine();  // Потребление новой строки
+        return choice;
+    }
+
+    private void handleUserChoice(int choice) {
+        switch (choice) {
+            case 1:
+                addPerson();
+                break;
+            case 2:
+                showTree();
+                break;
+            case 3:
+                loadTree();
+                break;
+            case 4:
+                saveTree();
+                break;
+            case 5:
+                sortByName();
+                break;
+            case 6:
+                sortByBirthDate();
+                break;
+            case 7:
+                System.exit(0);
+                break;
+            default:
+                System.out.println("Неверный выбор. Пожалуйста, выберите снова.");
+        }
+    }
+
+    private void addPerson() {
+        System.out.print("Введите ID: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();  // Потребление новой строки
+        System.out.print("Введите имя: ");
+        String name = scanner.nextLine();
+        System.out.print("Введите дату рождения (гггг-мм-дд): ");
+        String birthDateString = scanner.nextLine();
+        LocalDate birthDate = LocalDate.parse(birthDateString);
+
+        Person person = new Person(id, name, birthDate);
+        presenter.addPerson(person);
+
+        System.out.print("Есть ли у этой персоны дети? (да/нет): ");
+        String hasChildren = scanner.nextLine();
+        if (hasChildren.equalsIgnoreCase("да")) {
+            System.out.print("Введите ID ребенка: ");
+            int childId = scanner.nextInt();
+            presenter.addChild(id, childId);
+        }
+
+        System.out.println("Персона добавлена!");
+    }
+
+    private void showTree() {
+        String familyTreeInfo = presenter.getFamilyTreeInfo();
+        System.out.println(familyTreeInfo);
+    }
+
+    private void loadTree() {
+        System.out.print("Введите имя файла для загрузки: ");
+        String filename = scanner.nextLine();
+        File file = new File(filename);
+        try {
+            presenter.loadFamilyTreeFromFile(file);
+            System.out.println("Дерево загружено!");
+        } catch (IOException | ClassNotFoundException ex) {
+            System.out.println("Ошибка загрузки дерева!");
+        }
+    }
+
+    private void saveTree() {
+        System.out.print("Введите имя файла для сохранения: ");
+        String filename = scanner.nextLine();
+        File file = new File(filename);
+        try {
+            presenter.saveFamilyTreeToFile(file);
+            System.out.println("Дерево сохранено!");
+        } catch (IOException ex) {
+            System.out.println("Ошибка сохранения дерева!");
+        }
+    }
+
+    private void sortByName() {
+        presenter.sortByName();
+        System.out.println("Дерево отсортировано по имени!");
+    }
+
+    private void sortByBirthDate() {
+        presenter.sortByBirthDate();
+        System.out.println("Дерево отсортировано по дате рождения!");
     }
 }

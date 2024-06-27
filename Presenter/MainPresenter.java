@@ -1,31 +1,48 @@
 package homeWork.Presenter;
 
-import homeWork.Model.FamilyTree;
 import homeWork.Model.Person;
+import homeWork.Service.TreeService;
 
-import java.time.LocalDate;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
-public class MainPresenter<T extends Person> {
-    private FamilyTree<T> familyTree;
+public class MainPresenter {
+    private TreeService treeService;
 
     public MainPresenter() {
-        this.familyTree = new FamilyTree<>();
+        this.treeService = new TreeService();
     }
 
-    public void addPerson(T person) {
-        familyTree.addMember(person);
+    public void addPerson(Person person) {
+        treeService.addPerson(person);
     }
 
     public void addChild(int parentId, int childId) {
-        T parent = familyTree.findMemberById(parentId);
-        T child = familyTree.findMemberById(childId);
-        if (parent != null && child != null) {
-            parent.addChild(child);
-        }
+        treeService.addChild(parentId, childId);
     }
 
-    public List<T> getFamilyTreeMembers() {
-        return familyTree.getMembers();
+    public List<Person> getFamilyTreeMembers() {
+        return treeService.getFamilyTree().getMembers();
+    }
+
+    public String getFamilyTreeInfo() {
+        return treeService.getFamilyTreeInfo();
+    }
+
+    public void saveFamilyTreeToFile(File file) throws IOException {
+        treeService.saveFamilyTreeToFile(file);
+    }
+
+    public void loadFamilyTreeFromFile(File file) throws IOException, ClassNotFoundException {
+        treeService.loadFamilyTreeFromFile(file);
+    }
+
+    public void sortByName() {
+        treeService.sortByName();
+    }
+
+    public void sortByBirthDate() {
+        treeService.sortByBirthDate();
     }
 }
