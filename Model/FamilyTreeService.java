@@ -1,4 +1,4 @@
-package homeWork.Service;
+package homeWork.Model;
 
 import homeWork.Model.FamilyTree;
 import homeWork.Model.FamilyTreeFileManager;
@@ -9,13 +9,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class TreeService {
+public class FamilyTreeService {
     private FamilyTree<Person> familyTree;
-    private FamilyTreeFileManager fileManager;
+    private FamilyTreeFileManager<Person> fileManager;
 
-    public TreeService() {
+    public FamilyTreeService() {
         this.familyTree = new FamilyTree<>();
-        this.fileManager = new FamilyTreeFileManager();
+        this.fileManager = new FamilyTreeFileManager<>();
     }
 
     public void addPerson(Person person) {

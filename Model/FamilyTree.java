@@ -2,11 +2,7 @@ package homeWork.Model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-
-import FamilyTree.test.homeWork.Model.FamilyMember;
 
 public class FamilyTree<T extends FamilyMember> implements Serializable {
     private List<T> members;
@@ -33,20 +29,15 @@ public class FamilyTree<T extends FamilyMember> implements Serializable {
     }
 
     public void sortByName() {
-        Collections.sort(members, new Comparator<T>() {
-            @Override
-            public int compare(T m1, T m2) {
-                return m1.getName().compareTo(m2.getName());
-            }
-        });
+        members.sort((m1, m2) -> m1.getName().compareTo(m2.getName()));
     }
 
     public void sortByBirthDate() {
-        Collections.sort(members, new Comparator<T>() {
-            @Override
-            public int compare(T m1, T m2) {
-                return m1.getBirthDate().compareTo(m2.getBirthDate());
-            }
-        });
+        members.sort((m1, m2) -> m1.getBirthDate().compareTo(m2.getBirthDate()));
+    }
+
+    public String displayFamilyInfo(Long id) {
+        T member = findMemberById(id.intValue());
+        return member != null ? member.toString() : "Member not found";
     }
 }

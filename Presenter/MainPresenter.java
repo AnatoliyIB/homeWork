@@ -1,48 +1,56 @@
 package homeWork.Presenter;
 
+import homeWork.Model.FamilyTree;
+import homeWork.Model.FamilyTreeFileManager;
+import homeWork.Model.FamilyTreeService;
 import homeWork.Model.Person;
-import homeWork.Service.TreeService;
+import homeWork.View.MainView;
+import homeWork.Model.FileManager;
+import homeWork.Model.FamilyMember;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
-public class MainPresenter {
-    private TreeService treeService;
+public class MainPresenter implements Presenter {
+    private final FamilyTreeService treeService;
+    private final MainView view;
 
-    public MainPresenter() {
-        this.treeService = new TreeService();
+    public MainPresenter(MainView view) {
+        this.treeService = new FamilyTreeService();
+        this.view = view;
     }
 
-    public void addPerson(Person person) {
+    @Override
+    public void addPerson(int id, String name, String birthDate) {
+        Person person = new Person(id, name, LocalDate.parse(birthDate));
         treeService.addPerson(person);
+        view.displayMessage("Person added.");
     }
 
-    public void addChild(int parentId, int childId) {
-        treeService.addChild(parentId, childId);
+    @Override
+    public void showFamilyTree() {
+        view.displayMessage(treeService.getFamilyTreeInfo());
     }
 
-    public List<Person> getFamilyTreeMembers() {
-        return treeService.getFamilyTree().getMembers();
+    @Override
+    public void saveFamilyTree() {
+        try {
+            treeService.saveFamilyTreeToFile(new File("family_tree.dat"));
+            view.displayMessage("Family tree saved.");
+        } catch (IOException e) {
+            view.displayMessage("Failed to save family tree.");
+        }
     }
 
-    public String getFamilyTreeInfo() {
-        return treeService.getFamilyTreeInfo();
-    }
-
-    public void saveFamilyTreeToFile(File file) throws IOException {
-        treeService.saveFamilyTreeToFile(file);
-    }
-
-    public void loadFamilyTreeFromFile(File file) throws IOException, ClassNotFoundException {
-        treeService.loadFamilyTreeFromFile(file);
-    }
-
-    public void sortByName() {
-        treeService.sortByName();
-    }
-
-    public void sortByBirthDate() {
-        treeService.sortByBirthDate();
+    @Override
+    public void loadFamilyTree() {
+        try {
+            treeService.loadFamilyTreeFromFile(new File("family_tree.dat"));
+            view.displayMessage("Family tree loaded.");
+        } catch (IOException | ClassNotFoundException e) {
+            view.displayMessage("Failed to load family tree.");
+        }
     }
 }
